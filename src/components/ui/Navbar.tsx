@@ -34,14 +34,11 @@ const Navbar: React.FC = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-black bg-opacity-90 shadow-lg'
-          : 'bg-transparent'
+        isScrolled ? 'bg-black bg-opacity-90 shadow-lg' : 'bg-transparent'
       }`}
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/images/logo.png"
@@ -55,9 +52,8 @@ const Navbar: React.FC = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
-            {NAV_ITEMS.map((item) => (
+            {NAV_ITEMS.map(item => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -78,11 +74,7 @@ const Navbar: React.FC = () => {
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-white focus:outline-none"
-            onClick={toggleMobileMenu}
-          >
+          <button className="md:hidden text-white focus:outline-none" onClick={toggleMobileMenu}>
             <svg
               className="w-6 h-6"
               fill="none"
@@ -109,11 +101,10 @@ const Navbar: React.FC = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden pt-4 pb-2">
             <div className="flex flex-col space-y-4">
-              {NAV_ITEMS.map((item) => (
+              {NAV_ITEMS.map(item => (
                 <Link
                   key={item.name}
                   href={item.href}

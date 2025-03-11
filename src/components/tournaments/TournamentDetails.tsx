@@ -14,8 +14,10 @@ interface TournamentDetailsProps {
 }
 
 const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'teams' | 'bracket' | 'rules'>('overview');
-  
+  const [activeTab, setActiveTab] = useState<'overview' | 'teams' | 'bracket' | 'rules'>(
+    'overview'
+  );
+
   const {
     name,
     description,
@@ -31,7 +33,7 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
     rules,
     prizes,
   } = tournament;
-  
+
   const getStatusBadgeColor = () => {
     switch (status) {
       case 'upcoming':
@@ -50,35 +52,32 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
       <div className="flex items-center space-x-4 mb-4">
         {team.logo ? (
           <div className="w-12 h-12 relative">
-            <Image
-              src={team.logo}
-              alt={team.name}
-              fill
-              className="object-contain rounded-full"
-            />
+            <Image src={team.logo} alt={team.name} fill className="object-contain rounded-full" />
           </div>
         ) : (
           <div className="w-12 h-12 bg-dark-300 rounded-full flex items-center justify-center">
             <span className="text-lg font-bold">{team.name[0]}</span>
           </div>
         )}
-        
+
         <h3 className="text-lg font-bold">{team.name}</h3>
       </div>
-      
+
       <div className="flex-grow">
         <h4 className="text-sm font-medium text-gray-400 mb-2">Players:</h4>
         <ul className="space-y-1">
           {team.players.map(player => (
-            <li key={player.id || player.name} className="text-sm flex items-center justify-between">
+            <li
+              key={player.id || player.name}
+              className="text-sm flex items-center justify-between"
+            >
               <span>{player.name}</span>
               {player.rank && <span className="text-gray-500">{player.rank}</span>}
             </li>
           ))}
         </ul>
       </div>
-      
-      {/* OP.GG Link */}
+
       <div className="mt-4 pt-4 border-t border-dark-300">
         <a
           href={`https://www.op.gg/multisearch/na?summoners=${team.players.map(p => encodeURIComponent(p.name)).join(',')}`}
@@ -94,15 +93,9 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
 
   return (
     <div className="bg-dark-100 rounded-lg overflow-hidden">
-      {/* Header */}
       <div className="relative h-64 bg-dark-300">
         {poster ? (
-          <Image
-            src={poster}
-            alt={name}
-            fill
-            className="object-cover"
-          />
+          <Image src={poster} alt={name} fill className="object-cover" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <Image
@@ -114,30 +107,26 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
             <span className="text-2xl font-bold text-white z-10">{name}</span>
           </div>
         )}
-        
-        {/* Status Badge */}
-        <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold ${getStatusBadgeColor()}`}>
+
+        <div
+          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold ${getStatusBadgeColor()}`}
+        >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </div>
-        
-        {/* Overlay Gradient */}
+
         <div className="absolute inset-0 bg-gradient-to-t from-dark-100 to-transparent"></div>
-        
-        {/* Title */}
+
         <div className="absolute bottom-0 left-0 w-full p-6">
           <h1 className="text-3xl font-bold">{name}</h1>
           <div className="flex items-center space-x-4 mt-2">
             <span className="text-sm text-gray-300">
               {formatDate(startDate)} - {formatDate(endDate)}
             </span>
-            <span className="text-sm text-gray-300">
-              Format: {format}
-            </span>
+            <span className="text-sm text-gray-300">Format: {format}</span>
           </div>
         </div>
       </div>
-      
-      {/* Tabs */}
+
       <div className="border-b border-dark-200">
         <div className="flex overflow-x-auto scrollbar-hide">
           <button
@@ -184,44 +173,32 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
           )}
         </div>
       </div>
-      
-      {/* Tab Content */}
+
       <div className="p-6">
-        {/* Overview */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
             <div>
               <h2 className="text-xl font-bold mb-4">Tournament Description</h2>
-              <div className="text-gray-300 whitespace-pre-line">
-                {description}
-              </div>
+              <div className="text-gray-300 whitespace-pre-line">{description}</div>
             </div>
-            
+
             {prizes && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Prizes</h2>
-                <div className="text-gray-300 whitespace-pre-line">
-                  {prizes}
-                </div>
+                <div className="text-gray-300 whitespace-pre-line">{prizes}</div>
               </div>
             )}
-            
-            {/* Media Gallery */}
+
             {(flyer || videoLink) && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Media</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {flyer && (
                     <div className="relative h-80 bg-dark-200 rounded-lg overflow-hidden">
-                      <Image
-                        src={flyer}
-                        alt={`${name} Flyer`}
-                        fill
-                        className="object-contain"
-                      />
+                      <Image src={flyer} alt={`${name} Flyer`} fill className="object-contain" />
                     </div>
                   )}
-                  
+
                   {videoLink && (
                     <div className="relative h-80 bg-dark-200 rounded-lg overflow-hidden">
                       <iframe
@@ -236,8 +213,7 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
                 </div>
               </div>
             )}
-            
-            {/* Sponsors */}
+
             {sponsors && sponsors.length > 0 && (
               <div>
                 <h2 className="text-xl font-bold mb-4">Sponsors</h2>
@@ -266,16 +242,14 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
             )}
           </div>
         )}
-        
-        {/* Bracket */}
+
         {activeTab === 'bracket' && (
           <div>
             <h2 className="text-xl font-bold mb-4">Tournament Bracket</h2>
             <BracketVisualization tournament={tournament} />
           </div>
         )}
-        
-        {/* Teams */}
+
         {activeTab === 'teams' && (
           <div>
             <h2 className="text-xl font-bold mb-4">Participating Teams</h2>
@@ -290,22 +264,16 @@ const TournamentDetails: React.FC<TournamentDetailsProps> = ({ tournament }) => 
             )}
           </div>
         )}
-        
-        {/* Rules */}
+
         {activeTab === 'rules' && (
           <div>
             <h2 className="text-xl font-bold mb-4">Tournament Rules</h2>
-            <div className="text-gray-300 whitespace-pre-line">
-              {rules}
-            </div>
+            <div className="text-gray-300 whitespace-pre-line">{rules}</div>
           </div>
         )}
       </div>
-      
-      {/* Actions */}
+
       <div className="p-6 bg-dark-200 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-     
-        
         <div className="text-sm text-gray-400">
           Registration {status === 'upcoming' ? 'closes' : 'closed'} on {formatDate(startDate)}
         </div>

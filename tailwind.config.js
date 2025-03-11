@@ -42,12 +42,12 @@ module.exports = {
         sans: ['Inter', 'sans-serif'],
       },
       boxShadow: {
-        'gold': '0 0 10px rgba(212, 175, 55, 0.5)',
-        'teal': '0 0 10px rgba(0, 188, 212, 0.5)',
+        gold: '0 0 10px rgba(212, 175, 55, 0.5)',
+        teal: '0 0 10px rgba(0, 188, 212, 0.5)',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'float': 'float 6s ease-in-out infinite',
+        float: 'float 6s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -57,9 +57,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio'),
-  ],
-}
-
+  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/aspect-ratio')],
+};

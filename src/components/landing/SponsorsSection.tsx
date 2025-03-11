@@ -8,7 +8,6 @@ const SponsorsSection: React.FC = () => {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-
   useEffect(() => {
     if (loading && sponsors.length === 0) {
       const dummySponsors: Sponsor[] = [
@@ -37,7 +36,7 @@ const SponsorsSection: React.FC = () => {
           logo: '/images/sponsors/sponsor4.png',
         },
       ];
-      
+
       setSponsors(dummySponsors);
       setLoading(false);
     }
@@ -51,7 +50,7 @@ const SponsorsSection: React.FC = () => {
     <section className="py-16 bg-black">
       <div className="container mx-auto px-4">
         <h2 className="section-title text-center mb-12">Our Sponsors</h2>
-        
+
         {loading ? (
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold"></div>
@@ -59,7 +58,7 @@ const SponsorsSection: React.FC = () => {
         ) : (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-              {sponsors.map((sponsor) => (
+              {sponsors.map(sponsor => (
                 <a
                   key={sponsor.id}
                   target="_blank"
@@ -81,14 +80,14 @@ const SponsorsSection: React.FC = () => {
                 </a>
               ))}
             </div>
-            
+
             <div className="text-center">
               <p className="text-gray-400 mb-6">
                 Interested in sponsoring League of Flex tournaments or events?
               </p>
               <a
                 href="https://discord.gg/leagueofflex"
-                target='_blank'
+                target="_blank"
                 className="inline-flex items-center text-teal hover:text-gold transition-colors font-medium"
               >
                 Contact us for sponsorship opportunities

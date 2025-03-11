@@ -22,7 +22,7 @@ export function getTierPoints(): TierPoints {
   if (typeof window === 'undefined') {
     return DEFAULT_TIER_POINTS;
   }
-  
+
   const storedPoints = localStorage.getItem('tierPoints');
   return storedPoints ? JSON.parse(storedPoints) : DEFAULT_TIER_POINTS;
 }
@@ -39,12 +39,9 @@ export function calculatePlayerValue(player: Player, tierPoints: TierPoints): nu
  */
 export function calculateTeamAverage(team: Player[], tierPoints: TierPoints): number {
   if (team.length === 0) return 0;
-  
-  const total = team.reduce(
-    (sum, player) => sum + calculatePlayerValue(player, tierPoints),
-    0
-  );
-  
+
+  const total = team.reduce((sum, player) => sum + calculatePlayerValue(player, tierPoints), 0);
+
   return total / team.length;
 }
 
@@ -94,11 +91,11 @@ export function isValidEmail(email: string): boolean {
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 

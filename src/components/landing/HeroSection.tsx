@@ -5,42 +5,33 @@ import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { ThreeJSBackground } from '@/components/ui/ThreeJSBackground';
 
-
 const HeroSection: React.FC = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* 3JS Background */}
-  
       <ThreeJSBackground variant="waves" intensity="high" color1="#D4AF37" color2="#00BCD4" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90 z-10"></div>
 
-{/* Content */}
-<div className="container mx-auto px-4 z-20 text-center py-16 relative">
+      <div className="container mx-auto px-4 z-20 text-center py-16 relative">
         <div className="flex flex-col items-center justify-center">
-          {/* Logo */}
-        {/* Logo */}
-<div className="mb-8 animate-float">
-<Image
-    src="/images/logo.png"
-    alt="League of Flex Logo"
-    width={2400}
-    height={240}
-    className="w-40 h-40 md:w-44 md:h-44 lg:w-56 lg:h-56"
-    priority
-  />
-</div>
-          {/* Heading */}
+          <div className="mb-8 animate-float">
+            <Image
+              src="/images/logo.png"
+              alt="League of Flex Logo"
+              width={2400}
+              height={240}
+              className="w-40 h-40 md:w-44 md:h-44 lg:w-56 lg:h-56"
+              priority
+            />
+          </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             <span className="text-white">League of</span>
             <span className="text-gold ml-3 gold-glow">Flex</span>
           </h1>
-          
-          {/* Tagline */}
+
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
             Custom 5v5 team generation & tournament management for your League of Legends community
           </p>
-          
-          {/* CTA Buttons */}
+
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
             <Button href="/customs" size="lg" variant="primary">
               Generate Teams
@@ -49,8 +40,7 @@ const HeroSection: React.FC = () => {
               View Tournaments
             </Button>
           </div>
-          
-          {/* Discord Join */}
+
           <div className="mt-12">
             <a
               href="https://discord.gg/leagueofflex"
@@ -71,8 +61,7 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      {/* Scroll Indicator */}
+
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <svg
           className="w-6 h-6 text-white opacity-70"

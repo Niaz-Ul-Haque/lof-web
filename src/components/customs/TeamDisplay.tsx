@@ -13,7 +13,7 @@ interface TeamDisplayProps {
 
 const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset }) => {
   const { blueTeam, redTeam } = match;
-  
+
   const getRankColorClass = (rank: string): string => {
     if (rank.includes('I')) return 'text-gray-400'; // Iron
     if (rank.includes('B')) return 'text-amber-800'; // Bronze
@@ -50,13 +50,14 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset }) => {
     blueTeam.players.forEach((player, index) => {
       copyText += `${index + 1}. ${player.name} - ${getRankName(player.rank as keyof typeof RANK_DESCRIPTIONS)}${player.role ? ` (${player.role})` : ''}\n`;
     });
-    
+
     copyText += `\nRED TEAM - ${redTeam.name} (Avg: ${redTeam.averageRank.toFixed(2)})\n`;
     redTeam.players.forEach((player, index) => {
       copyText += `${index + 1}. ${player.name} - ${getRankName(player.rank as keyof typeof RANK_DESCRIPTIONS)}${player.role ? ` (${player.role})` : ''}\n`;
     });
-    
-    navigator.clipboard.writeText(copyText)
+
+    navigator.clipboard
+      .writeText(copyText)
       .then(() => {
         alert('Teams copied to clipboard!');
       })
@@ -65,30 +66,30 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset }) => {
       });
   };
 
-  const hasRoles = blueTeam.players.some(player => player.role) || redTeam.players.some(player => player.role);
+  const hasRoles =
+    blueTeam.players.some(player => player.role) || redTeam.players.some(player => player.role);
 
   return (
     <div className="bg-dark-100 rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-6">Generated Teams</h2>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        {/* Blue Team */}
         <div className="bg-blue-900/20 border border-blue-900 rounded-lg overflow-hidden">
           <div className="bg-blue-900/40 p-4 flex justify-between items-center">
             <div>
               <h3 className="text-xl font-bold text-blue-300">{blueTeam.name}</h3>
               <p className="text-blue-400 text-sm">Avg Rank: {blueTeam.averageRank.toFixed(2)}</p>
             </div>
-            <a 
-              href={generateOpggLink(blueTeam.players)} 
-              target="_blank" 
+            <a
+              href={generateOpggLink(blueTeam.players)}
+              target="_blank"
               rel="noopener noreferrer"
               className="text-blue-300 hover:text-white text-sm bg-blue-900/50 px-3 py-1 rounded"
             >
               OP.GG
             </a>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -99,30 +100,27 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset }) => {
                   {hasRoles && <th className="py-2 px-4">Role</th>}
                 </tr>
               </thead>
-              <tbody>
-                {blueTeam.players.map((player, index) => renderPlayer(player, index))}
-              </tbody>
+              <tbody>{blueTeam.players.map((player, index) => renderPlayer(player, index))}</tbody>
             </table>
           </div>
         </div>
-        
-        {/* Red Team */}
+
         <div className="bg-red-900/20 border border-red-900 rounded-lg overflow-hidden">
           <div className="bg-red-900/40 p-4 flex justify-between items-center">
             <div>
               <h3 className="text-xl font-bold text-red-300">{redTeam.name}</h3>
               <p className="text-red-400 text-sm">Avg Rank: {redTeam.averageRank.toFixed(2)}</p>
             </div>
-            <a 
-              href={generateOpggLink(redTeam.players)} 
-              target="_blank" 
+            <a
+              href={generateOpggLink(redTeam.players)}
+              target="_blank"
               rel="noopener noreferrer"
               className="text-red-300 hover:text-white text-sm bg-red-900/50 px-3 py-1 rounded"
             >
               OP.GG
             </a>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -133,25 +131,23 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset }) => {
                   {hasRoles && <th className="py-2 px-4">Role</th>}
                 </tr>
               </thead>
-              <tbody>
-                {redTeam.players.map((player, index) => renderPlayer(player, index))}
-              </tbody>
+              <tbody>{redTeam.players.map((player, index) => renderPlayer(player, index))}</tbody>
             </table>
           </div>
         </div>
       </div>
-      
+
       <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
         <div className="flex space-x-4">
           <Button onClick={onReset} variant="primary">
             Generate New Teams
           </Button>
-          
+
           <Button onClick={copyToClipboard} variant="outline">
             Copy to Clipboard
           </Button>
         </div>
-        
+
         <p className="text-gray-400 text-sm">
           Team diff: {Math.abs(blueTeam.averageRank - redTeam.averageRank).toFixed(2)} points
         </p>
