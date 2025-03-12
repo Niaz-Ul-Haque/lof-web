@@ -15,18 +15,22 @@ interface CustomsFormProps {
   onTeamsGenerated: (match: CustomMatch) => void;
 }
 
+interface ExtendedPlayer extends Player {
+  tag?: string;
+}
+
 export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) => {
-  const [players, setPlayers] = useState<Player[]>(
+  const [players, setPlayers] = useState<ExtendedPlayer[]>(
     Array(10)
       .fill(null)
-      .map(() => ({ name: '', rank: '' }))
+      .map(() => ({ name: '', rank: '', tag: '' }))
   );
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [includeRoles, setIncludeRoles] = useState<boolean>(false);
 
-  const handlePlayerChange = (index: number, field: keyof Player, value: string) => {
+  const handlePlayerChange = (index: number, field: keyof ExtendedPlayer, value: string) => {
     const updatedPlayers = [...players];
     updatedPlayers[index] = { ...updatedPlayers[index], [field]: value };
     setPlayers(updatedPlayers);
@@ -52,10 +56,19 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
         return;
       }
 
-      const names = players.map(player => player.name.trim().toLowerCase());
+      const processedPlayers = players.map(player => {
+        const tagTrimmed = player.tag ? player.tag.trim() : '';
+        const fullName = tagTrimmed ? `${player.name.trim()}${tagTrimmed}` : player.name.trim();
+        return {
+          ...player,
+          name: fullName,
+        };
+      });
+
+      const names = processedPlayers.map(player => player.name.toLowerCase());
       const duplicateIndex = names.findIndex((name, index) => names.indexOf(name) !== index);
       if (duplicateIndex !== -1) {
-        setError(`Duplicate name: ${players[duplicateIndex].name}`);
+        setError(`Duplicate name: ${processedPlayers[duplicateIndex].name}`);
         setIsGenerating(false);
         return;
       }
@@ -68,7 +81,7 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
 
       const tierPoints = getTierPoints();
 
-      const match = generateBalancedTeams(players, tierPoints);
+      const match = generateBalancedTeams(processedPlayers, tierPoints);
 
       match.blueTeam.name = generateTeamName();
       match.redTeam.name = generateTeamName();
@@ -81,24 +94,39 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
       setIsGenerating(false);
     }
   };
+  
   const fillTestData = () => {
     const testNames = [
-      'ShadowBlade',
-      'MoonStriker',
-      'FrostFire',
-      'ThunderGod',
-      'NightWalker',
-      'BloodRaven',
-      'StormRider',
-      'DragonFist',
+      'AsahiKen',
+      'Batman',
+      'JuanTheGamer183',
+      'Quixxy',
+      'WreckBoy',
+      'theshadowvoid',
+      'Gato0083',
+      'DinoNugQueen',
       'PhantomSlayer',
       'WildHeart',
+    ];
+
+    const testTags = [
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
+      '#NA1',
     ];
 
     const testRanks = ['B', 'S', 'G', 'G', 'P', 'D', 'P', 'E', 'S', 'G'];
 
     const testPlayers = testNames.map((name, index) => ({
       name,
+      tag: testTags[index],
       rank: testRanks[index],
       role: includeRoles ? ['TOP', 'JG', 'MID', 'BOT', 'SUP'][index % 5] : undefined,
     }));
@@ -111,7 +139,7 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
     setPlayers(
       Array(10)
         .fill(null)
-        .map(() => ({ name: '', rank: '' }))
+        .map(() => ({ name: '', rank: '', tag: '' }))
     );
     setError(null);
   };
@@ -175,14 +203,25 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
                   )}
                 </div>
 
-                <div className="mb-2">
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={e => handlePlayerChange(index, 'name', e.target.value)}
-                    placeholder="Player Name"
-                    className="form-input w-full bg-dark-300 border-dark-300 text-white rounded text-sm py-1.5"
-                  />
+                <div className="mb-2 flex space-x-2">
+                  <div className="flex-grow">
+                    <input
+                      type="text"
+                      value={player.name}
+                      onChange={e => handlePlayerChange(index, 'name', e.target.value)}
+                      placeholder="Player Name"
+                      className="form-input w-full bg-dark-300 border-dark-300 text-white rounded text-sm py-1.5"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <input
+                      type="text"
+                      value={player.tag || ''}
+                      onChange={e => handlePlayerChange(index, 'tag', e.target.value)}
+                      placeholder="#Tag"
+                      className="form-input w-full bg-dark-300 border-dark-300 text-white rounded text-sm py-1.5"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -273,14 +312,25 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
                   )}
                 </div>
 
-                <div className="mb-2">
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={e => handlePlayerChange(index + 5, 'name', e.target.value)}
-                    placeholder="Player Name"
-                    className="form-input w-full bg-dark-300 border-dark-300 text-white rounded text-sm py-1.5"
-                  />
+                <div className="mb-2 flex space-x-2">
+                  <div className="flex-grow">
+                    <input
+                      type="text"
+                      value={player.name}
+                      onChange={e => handlePlayerChange(index + 5, 'name', e.target.value)}
+                      placeholder="Player Name"
+                      className="form-input w-full bg-dark-300 border-dark-300 text-white rounded text-sm py-1.5"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <input
+                      type="text"
+                      value={player.tag || ''}
+                      onChange={e => handlePlayerChange(index + 5, 'tag', e.target.value)}
+                      placeholder="#Tag"
+                      className="form-input w-full bg-dark-300 border-dark-300 text-white rounded text-sm py-1.5"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
