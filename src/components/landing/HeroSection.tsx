@@ -15,11 +15,11 @@ const HeroSection: React.FC = () => {
         <div className="flex flex-col items-center justify-center">
           <div className="mb-8 animate-float">
             <Image
-              src="/images/logo.png"
+              src="/images/logo-bg.png"
               alt="League of Flex Logo"
-              width={2400}
-              height={240}
-              className="w-40 h-40 md:w-44 md:h-44 lg:w-56 lg:h-56"
+              width={400}
+              height={400}
+              className="w-96 h-96 md:w-96 md:h-96 lg:w-96 lg:h-96"
               priority
             />
           </div>

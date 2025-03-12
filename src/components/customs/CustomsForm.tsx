@@ -193,7 +193,7 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
                       className="form-select appearance-none bg-dark-300 border border-dark-400 focus:border-gray-500 text-white rounded text-sm py-1.5 px-3 pr-8 w-full shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
                       required
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled>
                         Select rank...
                       </option>
                       {Object.entries(RANK_DESCRIPTIONS).map(([code, name]) => (
@@ -291,7 +291,7 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated }) =>
                       className="form-select appearance-none bg-dark-300 border border-dark-400 focus:border-gray-500 text-white rounded text-sm py-1.5 px-3 pr-8 w-full shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
                       required
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled>
                         Select rank...
                       </option>
                       {Object.entries(RANK_DESCRIPTIONS).map(([code, name]) => (
