@@ -8,9 +8,11 @@ import { DEFAULT_TIER_POINTS } from '@/lib/constants';
 
 export default function CustomsPage() {
   const [generatedMatch, setGeneratedMatch] = useState<CustomMatch | null>(null);
+  const [previousEntries, setPreviousEntries] = useState<any>(null);
 
-  const handleTeamsGenerated = (match: CustomMatch) => {
+  const handleTeamsGenerated = (match: CustomMatch, entries: any) => {
     setGeneratedMatch(match);
+    setPreviousEntries(entries);
 
     setTimeout(() => {
       window.scrollTo({
@@ -20,17 +22,21 @@ export default function CustomsPage() {
     }, 100);
   };
 
-  const handleReset = () => {
+  const handleReset = (entries = null) => {
+    setPreviousEntries(entries);
     setGeneratedMatch(null);
   };
 
   return (
-    <div className="relative min-h-screen pt-20 pb-16">
+    <div className="relative min-h-screen pt-20 pb-16" style={{ background: '#1d1c24' }}>
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <h1 className="text-4xl font-bold mb-4">
-              Custom 5v5 <span className="text-gold">Team Generator</span>
+              Custom 5v5{' '}
+              <span className="text-gold" style={{ color: '#d3a536' }}>
+                Team Generator
+              </span>
             </h1>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               Enter 10 player names and ranks to generate balanced teams for your custom matches.
@@ -38,9 +44,13 @@ export default function CustomsPage() {
           </div>
 
           {generatedMatch ? (
-            <TeamDisplay match={generatedMatch} onReset={handleReset} />
+            <TeamDisplay
+              match={generatedMatch}
+              onReset={handleReset}
+              previousEntries={previousEntries}
+            />
           ) : (
-            <CustomsForm onTeamsGenerated={handleTeamsGenerated} />
+            <CustomsForm onTeamsGenerated={handleTeamsGenerated} previousData={previousEntries} />
           )}
 
           <div className="mt-16 bg-dark-100 rounded-lg p-6">

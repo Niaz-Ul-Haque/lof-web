@@ -1,4 +1,5 @@
 export interface Player {
+  pointValue?: number;
   id?: string;
   name: string;
   rank: string;

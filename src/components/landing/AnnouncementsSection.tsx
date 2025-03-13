@@ -17,7 +17,7 @@ const AnnouncementsSection: React.FC = () => {
         {
           id: '1',
           title: 'Tournament coming soon with $$$!',
-          content: 'Register your team for our upcoming tournament. More details coming soon!',
+          content: 'Register yourself for our upcoming tournament. More details coming soon!',
           date: new Date().toISOString(),
           pinned: true,
         },

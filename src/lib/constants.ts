@@ -1,10 +1,11 @@
 import { Tournament } from '@/lib/types';
 
 export const COLORS = {
-  GOLD: '#D4AF37',
-  TEAL: '#00BCD4',
+  GOLD: '#d3a536',
+  TEAL: '#51b6ca',
+  BRIGHT_BLUE: '#3aebfd',
   WHITE: '#FFFFFF',
-  BLACK: '#000000',
+  BLACK: '#1d1c24',
 };
 
 export const DEFAULT_TIER_POINTS = {
