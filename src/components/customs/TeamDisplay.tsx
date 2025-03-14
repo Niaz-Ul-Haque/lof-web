@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -94,7 +95,7 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
     }));
 
     if (localMatch.blueTeam.players.length > 0) {
-      const factorRange = randomFactor / 100; 
+      const factorRange = randomFactor / 100;
       playersWithPoints.forEach(player => {
         const randomVariation = 1 - factorRange + Math.random() * factorRange * 2;
         player.pointValue = player.pointValue * randomVariation;
@@ -301,124 +302,124 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
 
   return (
     <div className="bg-dark-100 rounded-lg shadow-lg p-4 md:p-6">
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-  <h2 className="text-2xl font-bold text-white flex items-center">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-6 w-6 mr-2 text-blue-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-      />
-    </svg>
-    Team Matchup
-  </h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+        <h2 className="text-2xl font-bold text-white flex items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 mr-2 text-blue-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          Team Matchup
+        </h2>
 
-  <div className="flex items-center space-x-3">
-    <Button
-      onClick={handleBackToForm}
-      variant="outline"
-      className="flex items-center text-sm"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-4 w-4 mr-1"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M10 19l-7-7m0 0l7-7m-7 7h18"
-        />
-      </svg>
-      Back
-    </Button>
-
-    {isClient && (
-      <div className="flex items-center">
-        <div className="flex items-center bg-dark-300 rounded overflow-hidden">
-          <input
-            type="text"
-            placeholder="4"
-            value={randomFactor}
-            onChange={e => {
-              const value = e.target.value === '' ? '' : parseInt(e.target.value);
-              setRandomFactor(value as number);
-            }}
-            onBlur={e => {
-              const value =
-                e.target.value === ''
-                  ? 4
-                  : Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
-              setRandomFactor(value as number);
-            }}
-            className="w-12 bg-dark-300 border-y border-l border-gold text-white rounded-l text-xs py-1.5 px-2 text-center focus:outline-none focus:ring-1 focus:ring-gray-500"
-          />
-          <span className="bg-dark-400 text-gray-300 text-xs py-1.5 px-2 border-y border-r border-gold">
-            %
-          </span>
-        </div>
-        <div className="relative ml-2">
-          <button
-            onClick={() => setShowRandomFactorInfo(!showRandomFactorInfo)}
-            className="text-gray-400 hover:text-white"
+        <div className="flex items-center space-x-3">
+          <Button
+            onClick={handleBackToForm}
+            variant="outline"
+            className="flex items-center text-sm"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              className="h-4 w-4 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-          </button>
-          {showRandomFactorInfo && (
-            <div className="absolute top-full right-0 mt-1 w-48 bg-dark-300 border border-dark-400 rounded p-2 text-xs text-gray-300 z-10 shadow-lg">
-              Randomness factor for team reshuffling. Higher values create more varied teams,
-              but may be less balanced.
+            Back
+          </Button>
+
+          {isClient && (
+            <div className="flex items-center">
+              <div className="flex items-center bg-dark-300 rounded overflow-hidden">
+                <input
+                  type="text"
+                  placeholder="4"
+                  value={randomFactor}
+                  onChange={e => {
+                    const value = e.target.value === '' ? '' : parseInt(e.target.value);
+                    setRandomFactor(value as number);
+                  }}
+                  onBlur={e => {
+                    const value =
+                      e.target.value === ''
+                        ? 4
+                        : Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                    setRandomFactor(value as number);
+                  }}
+                  className="w-12 bg-dark-300 border-y border-l border-gold text-white rounded-l text-xs py-1.5 px-2 text-center focus:outline-none focus:ring-1 focus:ring-gray-500"
+                />
+                <span className="bg-dark-400 text-gray-300 text-xs py-1.5 px-2 border-y border-r border-gold">
+                  %
+                </span>
+              </div>
+              <div className="relative ml-2">
+                <button
+                  onClick={() => setShowRandomFactorInfo(!showRandomFactorInfo)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+                {showRandomFactorInfo && (
+                  <div className="absolute top-full right-0 mt-1 w-48 bg-dark-300 border border-dark-400 rounded p-2 text-xs text-gray-300 z-10 shadow-lg">
+                    Randomness factor for team reshuffling. Higher values create more varied teams,
+                    but may be less balanced.
+                  </div>
+                )}
+              </div>
             </div>
           )}
+
+          <Button
+            onClick={handleRefreshTeams}
+            disabled={isRefreshing}
+            variant="outline"
+            className="flex items-center text-sm bg-gradient-to-r from-blue-900/30 to-red-900/30 hover:from-blue-900/50 hover:to-red-900/50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-4 w-4 mr-1 ${isRefreshing ? 'animate-spin' : ''}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Re-shuffle
+          </Button>
         </div>
       </div>
-    )}
-
-    <Button
-      onClick={handleRefreshTeams}
-      disabled={isRefreshing}
-      variant="outline"
-      className="flex items-center text-sm bg-gradient-to-r from-blue-900/30 to-red-900/30 hover:from-blue-900/50 hover:to-red-900/50"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={`h-4 w-4 mr-1 ${isRefreshing ? 'animate-spin' : ''}`}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-        />
-      </svg>
-      Re-shuffle
-    </Button>
-  </div>
-</div>
 
       <div className="bg-dark-200 rounded-lg p-3 mb-4 flex items-center justify-between">
         <div className="flex items-center">
@@ -644,45 +645,45 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-  <div className="flex flex-wrap gap-3 w-full sm:w-auto">
-    <Button
-      onClick={() => onReset(null)}
-      variant="primary"
-      className="bg-[#51b6ca] border-[#51b6ca] hover:bg-[#41a6ba] hover:border-[#41a6ba] flex flex-row items-center py-2 px-4 w-full sm:w-auto"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 mr-2"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fillRule="evenodd"
-          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-          clipRule="evenodd"
-        />
-      </svg>
-      <span>Generate New Teams</span>
-    </Button>
+        <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+          <Button
+            onClick={() => onReset(null)}
+            variant="primary"
+            className="bg-[#51b6ca] border-[#51b6ca] hover:bg-[#41a6ba] hover:border-[#41a6ba] flex flex-row items-center py-2 px-4 w-full sm:w-auto"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>Generate New Teams</span>
+          </Button>
 
-    <Button
-      onClick={copyToClipboard}
-      variant="outline"
-      className="flex items-center gap-2 w-full sm:w-auto"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-      </svg>
-      <span>Copy to Clipboard</span>
-    </Button>
-  </div>
-</div>
+          <Button
+            onClick={copyToClipboard}
+            variant="outline"
+            className="flex items-center gap-2 w-full sm:w-auto"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+            </svg>
+            <span>Copy to Clipboard</span>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
