@@ -19,8 +19,8 @@ const SponsorsSection: React.FC = () => {
         },
         {
           id: '2',
-          name: 'Moyun & Friends Co.',
-          description: 'Professional esports tournaments and events',
+          name: 'Quixxy Digital',
+          description: 'Professional esports digital agency',
           logo: '/images/sponsors/sponsor2.png',
         },
         {

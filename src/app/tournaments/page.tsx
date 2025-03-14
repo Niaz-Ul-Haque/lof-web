@@ -106,8 +106,8 @@ export default function TournamentsPage() {
           <h2 className="text-xl font-bold mb-4">Want to Participate?</h2>
           <p className="text-gray-300 mb-6">
             Our tournaments are open to all skill levels. Join our Discord server to stay updated on
-            upcoming tournaments and registration deadlines. You can register your team through the
-            registration form on each tournament page.
+            upcoming tournaments and registration deadlines. You can register yourself or your team through the
+            registration form on each tournament page when its open.
           </p>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <a
