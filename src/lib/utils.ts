@@ -30,9 +30,16 @@ export function getTierPoints(): TierPoints {
 /**
  * Calculate player's point value based on rank
  */
-export function calculatePlayerValue(player: Player, tierPoints: TierPoints): number {
-  return tierPoints[player.rank] || 0;
-}
+export const calculatePlayerValue = (
+  player: Player,
+  tierPoints: Record<string, number>
+): number => {
+  if (!player.rank || !tierPoints[player.rank]) {
+    return 0;
+  }
+
+  return tierPoints[player.rank];
+};
 
 /**
  * Calculate team's average rank value

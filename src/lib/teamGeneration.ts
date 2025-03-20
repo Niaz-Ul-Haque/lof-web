@@ -1,157 +1,129 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { max } from 'three/examples/jsm/nodes/Nodes.js';
+// import { max } from 'three/examples/jsm/nodes/Nodes.js';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Player, Team, CustomMatch, TierPoints } from './types';
+import { Player } from './types';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { calculatePlayerValue, calculateTeamAverage, shuffleArray } from './utils';
 
-export function generateBalancedTeams(players: Player[], tierPoints: TierPoints): CustomMatch {
-  if (players.length !== 10) {
-    throw new Error('Team generation requires exactly 10 players');
+export const generateBalancedTeams = (players: Player[], tierPoints: Record<string, number>) => {
+  const playersWithIds = players.map(player => ({
+    ...player,
+    id: player.id || `${player.name}-${Math.random().toString(36).substr(2, 9)}`,
+  }));
+
+  const playerMap = new Map();
+  playersWithIds.forEach(player => {
+    playerMap.set(player.id, player);
+  });
+
+  if (playerMap.size !== 10) {
+    console.error('Need exactly 10 unique players for team generation');
+    throw new Error('Need exactly 10 unique players for team generation');
   }
 
-  const totalValue = players.reduce(
-    (sum, player) => sum + calculatePlayerValue(player, tierPoints),
-    0
-  );
-  const idealTeamValue = totalValue / 2;
+  const uniquePlayers = Array.from(playerMap.values());
 
-  const sortedPlayers = [...players].sort(
-    (a, b) => calculatePlayerValue(b, tierPoints) - calculatePlayerValue(a, tierPoints)
-  );
+  const sortedPlayers = [...uniquePlayers].sort((a, b) => {
+    const aPoints = a.points || calculatePlayerValue(a, tierPoints);
+    const bPoints = b.points || calculatePlayerValue(b, tierPoints);
+    return bPoints - aPoints;
+  });
 
-  const teamA: Player[] = [];
-  const teamB: Player[] = [];
+  const blueTeam: Player[] = [];
+  const redTeam: Player[] = [];
 
-  teamA.push(sortedPlayers[0]);
-  teamB.push(sortedPlayers[1]);
-  teamB.push(sortedPlayers[2]);
-  teamA.push(sortedPlayers[3]);
-
-  const remainingPlayers = sortedPlayers.slice(4);
-
-  const shuffledRemaining = shuffleArray(remainingPlayers);
-
-  for (const player of shuffledRemaining) {
-    const teamAValue = calculateTeamAverage([...teamA, player], tierPoints) * (teamA.length + 1);
-    const teamBValue = calculateTeamAverage([...teamB, player], tierPoints) * (teamB.length + 1);
-
-    const teamADiff = Math.abs(teamAValue - idealTeamValue);
-    const teamBDiff = Math.abs(teamBValue - idealTeamValue);
-
-    if (teamADiff <= teamBDiff && teamA.length < 5) {
-      teamA.push(player);
-    } else if (teamB.length < 5) {
-      teamB.push(player);
+  for (let i = 0; i < sortedPlayers.length; i++) {
+    if (i % 2 === 0) {
+      blueTeam.push(sortedPlayers[i]);
     } else {
-      teamA.push(player);
+      redTeam.push(sortedPlayers[i]);
     }
   }
 
-  if (teamA.length !== 5 || teamB.length !== 5) {
-    const allPlayers = [...teamA, ...teamB];
-    teamA.length = 0;
-    teamB.length = 0;
+  let blueTeamValue = blueTeam.reduce((sum, player) => {
+    return sum + (player.points || calculatePlayerValue(player, tierPoints));
+  }, 0);
 
-    for (let i = 0; i < allPlayers.length; i++) {
-      if (i < 5) {
-        teamA.push(allPlayers[i]);
-      } else {
-        teamB.push(allPlayers[i]);
-      }
-    }
-  }
+  let redTeamValue = redTeam.reduce((sum, player) => {
+    return sum + (player.points || calculatePlayerValue(player, tierPoints));
+  }, 0);
 
-  let bestDifference = Math.abs(
-    calculateTeamAverage(teamA, tierPoints) - calculateTeamAverage(teamB, tierPoints)
-  );
+  for (let attempts = 0; attempts < 100; attempts++) {
+    let improved = false;
 
-  let attempts = 0;
-  const maxAttempts = 100;
-  while (bestDifference > 0.5 && attempts < maxAttempts) {
-    attempts++;
+    for (let i = 0; i < blueTeam.length; i++) {
+      for (let j = 0; j < redTeam.length; j++) {
+        const currentDiff = Math.abs(blueTeamValue - redTeamValue);
 
-    for (let i = 0; i < teamA.length; i++) {
-      for (let j = 0; j < teamB.length; j++) {
-        const newTeamA = [...teamA];
-        const newTeamB = [...teamB];
+        const bluePlayerValue = blueTeam[i].points || calculatePlayerValue(blueTeam[i], tierPoints);
+        const redPlayerValue = redTeam[j].points || calculatePlayerValue(redTeam[j], tierPoints);
 
-        newTeamA[i] = teamB[j];
-        newTeamB[j] = teamA[i];
+        const newBlueTeamValue = blueTeamValue - bluePlayerValue + redPlayerValue;
+        const newRedTeamValue = redTeamValue - redPlayerValue + bluePlayerValue;
 
-        const newDifference = Math.abs(
-          calculateTeamAverage(newTeamA, tierPoints) - calculateTeamAverage(newTeamB, tierPoints)
-        );
+        const newDiff = Math.abs(newBlueTeamValue - newRedTeamValue);
 
-        if (newDifference < bestDifference) {
-          teamA[i] = teamB[j];
-          teamB[j] = newTeamA[i];
-          bestDifference = newDifference;
+        if (newDiff < currentDiff) {
+          const temp = blueTeam[i];
+          blueTeam[i] = redTeam[j];
+          redTeam[j] = temp;
+
+          blueTeamValue = newBlueTeamValue;
+          redTeamValue = newRedTeamValue;
+
+          improved = true;
+          break;
         }
       }
+
+      if (improved) break;
     }
 
-    if (
-      bestDifference ===
-      Math.abs(calculateTeamAverage(teamA, tierPoints) - calculateTeamAverage(teamB, tierPoints))
-    ) {
-      break;
-    }
+    if (!improved) break;
   }
 
-  console.assert(teamA.length === 5, 'Team A must have exactly 5 players');
-  console.assert(teamB.length === 5, 'Team B must have exactly 5 players');
-
-  const isTeamABlue = Math.random() > 0.5;
-
-  const blueTeam: Team = {
-    players: isTeamABlue ? teamA : teamB,
-    averageRank: isTeamABlue
-      ? calculateTeamAverage(teamA, tierPoints)
-      : calculateTeamAverage(teamB, tierPoints),
-  };
-
-  const redTeam: Team = {
-    players: isTeamABlue ? teamB : teamA,
-    averageRank: isTeamABlue
-      ? calculateTeamAverage(teamB, tierPoints)
-      : calculateTeamAverage(teamA, tierPoints),
-  };
+  const blueAverage = blueTeamValue / blueTeam.length;
+  const redAverage = redTeamValue / redTeam.length;
 
   return {
-    blueTeam,
-    redTeam,
+    blueTeam: {
+      name: '',
+      players: blueTeam,
+      averageRank: blueAverage,
+    },
+    redTeam: {
+      name: '',
+      players: redTeam,
+      averageRank: redAverage,
+    },
   };
-}
+};
 
-/**
- * Generate random team names for fun
- */
 export function generateTeamName(): string {
   const adjectives = [
-    'Mighty',
-    'Fearless',
-    'Savage',
-    'Divine',
-    'Elite',
-    'Blazing',
-    'Thunder',
-    'Mystic',
-    'Shadow',
-    'Infernal',
+    "Goon's",
+    "Trump's",
+    "Trudeau's",
+    "Carney's",
+    "Kamala's",
+    "JD Vance's",
+    "Elon's",
+    "Putin's",
+    "Erdogan's",
+    "Kanye's",
   ];
 
   const nouns = [
-    'Dragons',
-    'Wolves',
-    'Titans',
-    'Legends',
-    'Guardians',
-    'Phoenix',
-    'Knights',
-    'Demons',
-    'Warriors',
-    'Assassins',
+    'Goons',
+    'Panties',
+    'PeePee',
+    'Liberal',
+    'Skibidi',
+    'Phoenixes',
+    'Conservatives',
+    'Crocs',
+    'Socks',
+    'Daddy',
   ];
 
   const adjIndex = Math.floor(Math.random() * adjectives.length);

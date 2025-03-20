@@ -1,17 +1,13 @@
 /* eslint-disable */
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { createWorker, PSM } from 'tesseract.js';
 import Button from '@/components/ui/Button';
-import { Player, CustomMatch } from '@/lib/types';
+import { Player, CustomMatch, CustomsFormProps } from '@/lib/types';
 import { generateBalancedTeams, generateTeamName } from '@/lib/teamGeneration';
 import { getTierPoints, getRankName, calculatePlayerValue } from '@/lib/utils';
 import { DEFAULT_TIER_POINTS, RANK_DESCRIPTIONS } from '@/lib/constants';
-
-interface CustomsFormProps {
-  onTeamsGenerated: (match: CustomMatch, entries: any) => void;
-  previousData?: any;
-}
 
 interface ExtendedPlayer extends Player {
   tag?: string;
@@ -37,7 +33,11 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated, prev
     redTeam: false,
   });
   const [tagInputFocused, setTagInputFocused] = useState<number[]>([]);
-
+  const [activeTab, setActiveTab] = useState<'manual' | 'bulk'>('manual');
+  const [bulkNames, setBulkNames] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [isOcrProcessing, setIsOcrProcessing] = useState<boolean>(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   useEffect(() => {
     const updatedPlayers = [...players];
     let changed = false;
@@ -137,13 +137,9 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated, prev
         const tagTrimmed = player.tag ? player.tag.trim() : '';
         const fullName = tagTrimmed ? `${player.name.trim()}${tagTrimmed}` : player.name.trim();
 
-        const tierPoints = getTierPoints();
-        const pointValue = calculatePlayerValue({ ...player, name: fullName }, tierPoints);
-
         return {
           ...player,
           name: fullName,
-          points: pointValue,
         };
       });
 
@@ -169,14 +165,22 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated, prev
       }
 
       const tierPoints = getTierPoints();
+      const playersWithValues = processedPlayers.map(player => {
+        const pointValue = calculatePlayerValue(player, tierPoints);
+        return {
+          ...player,
+          points: pointValue,
+          id: `${player.name}-${Math.random().toString(36).substr(2, 9)}`,
+        };
+      });
 
-      const match = generateBalancedTeams(processedPlayers, tierPoints);
+      const match = generateBalancedTeams(playersWithValues, tierPoints);
 
       match.blueTeam.name = teamNames.blueTeam || generateTeamName();
       match.redTeam.name = teamNames.redTeam || generateTeamName();
 
       const formEntries = {
-        players: processedPlayers,
+        players: playersWithValues,
         includeRoles: includeRoles,
         teamNames: {
           blueTeam: match.blueTeam.name,
@@ -207,18 +211,7 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated, prev
       'WildHeart',
     ];
 
-    const testTags = [
-      '#NA1',
-      '#EUW',
-      '#OCE',
-      '#EUNE',
-      '#LAN',
-      '#JP',
-      '#TR',
-      '#RU',
-      '#KR',
-      '#LCK',
-    ];
+    const testTags = ['#NA1', '#EUW', '#OCE', '#EUNE', '#LAN', '#JP', '#TR', '#RU', '#KR', '#LCK'];
 
     const testRanks = ['B', 'S', 'G', 'G', 'P', 'D', 'P', 'E', 'S', 'G'];
 
@@ -258,11 +251,415 @@ export const CustomsForm: React.FC<CustomsFormProps> = ({ onTeamsGenerated, prev
     }));
   };
 
+  const processImageOCR = useCallback(
+    async (imageFile: File) => {
+      setIsOcrProcessing(true);
+      setErrors([]);
+
+      try {
+        const reader = new FileReader();
+        reader.onload = e => {
+          setUploadedImage(e.target?.result as string);
+        };
+        reader.readAsDataURL(imageFile);
+
+        const imageUrl = URL.createObjectURL(imageFile);
+        const img = new Image();
+
+        const imageLoaded = new Promise<HTMLImageElement>(resolve => {
+          img.onload = () => resolve(img);
+          img.src = imageUrl;
+        });
+
+        const loadedImg = await imageLoaded;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+          throw new Error('Could not get canvas context');
+        }
+
+        canvas.width = loadedImg.width;
+        canvas.height = loadedImg.height;
+
+        ctx.drawImage(loadedImg, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        let totalBrightness = 0;
+        const pixelsToSample = Math.min(1000, data.length / 4);
+        const step = Math.floor(data.length / 4 / pixelsToSample);
+
+        for (let i = 0; i < data.length; i += step * 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          totalBrightness += (r + g + b) / 3;
+        }
+
+        const avgBrightness = totalBrightness / pixelsToSample;
+        const isDarkBackground = avgBrightness < 128;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          if (isDarkBackground) {
+            data[i] = 255 - r;
+            data[i + 1] = 255 - g;
+            data[i + 2] = 255 - b;
+          } else {
+            const gray = 0.3 * r + 0.59 * g + 0.11 * b;
+            const threshold = 128;
+
+            const newValue = gray < threshold ? 0 : 255;
+            data[i] = newValue;
+            data[i + 1] = newValue;
+            data[i + 2] = newValue;
+          }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        const processedImageBlob = await new Promise<Blob>(resolve => {
+          canvas.toBlob(blob => {
+            if (blob) resolve(blob);
+            else throw new Error('Canvas to Blob conversion failed');
+          }, 'image/png');
+        });
+
+        const worker = await createWorker();
+
+        await worker.load('eng');
+        await worker.reinitialize('eng');
+
+        await worker.setParameters({
+          tessedit_char_whitelist:
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-#',
+          tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+          preserve_interword_spaces: '1',
+        });
+
+        const [originalResult, processedResult] = await Promise.all([
+          worker.recognize(imageFile),
+          worker.recognize(processedImageBlob),
+        ]);
+
+        await worker.terminate();
+
+        const allLines = [
+          ...originalResult.data.text.split('\n'),
+          ...processedResult.data.text.split('\n'),
+        ]
+          .map(line => line.trim())
+          .filter(line => line.length >= 3 && line.length <= 16);
+
+        const processedNames = [...new Set(allLines)]
+          .map(name => {
+            return name
+              .replace(/[^\w\s#\-_.]/g, '')
+              .replace(/\s+/g, '')
+              .trim();
+          })
+          .filter(name => name.length >= 3 && name.length <= 16);
+
+        if (processedNames.length > 0) {
+          const updatedPlayers = [...players];
+
+          processedNames.slice(0, 10).forEach((name, index) => {
+            const parts = name.split('#');
+
+            if (parts.length > 1) {
+              const nameOnly = parts[0].trim();
+              const tagContent = parts.slice(1).join('#');
+
+              const trimmedName = nameOnly.substring(0, 16);
+              const trimmedTag = '#' + tagContent.substring(0, 5);
+
+              updatedPlayers[index] = {
+                ...updatedPlayers[index],
+                name: trimmedName,
+                tag: trimmedTag,
+              };
+            } else {
+              updatedPlayers[index] = {
+                ...updatedPlayers[index],
+                name: name.substring(0, 16),
+                tag: updatedPlayers[index]?.tag || '',
+              };
+            }
+          });
+
+          setPlayers(updatedPlayers);
+
+          const message = `Successfully extracted ${processedNames.length} player name${processedNames.length !== 1 ? 's' : ''}`;
+          setSuccessMessage(message);
+
+          setTimeout(() => setSuccessMessage(''), 5000);
+        } else {
+          setErrors([
+            'No valid player names found in the image. Try a clearer screenshot or enter names manually.',
+          ]);
+        }
+
+        URL.revokeObjectURL(imageUrl);
+      } catch (error) {
+        console.error('OCR processing error:', error);
+        setErrors(['Failed to process image. Please try again or enter names manually.']);
+      } finally {
+        setIsOcrProcessing(false);
+      }
+    },
+    [players]
+  );
+
+  const processBulkNames = () => {
+    try {
+      const namesList = bulkNames
+        .split(/[\n,;]/)
+        .map(name => name.trim())
+        .filter(name => name.length > 0);
+
+      if (namesList.length === 0) {
+        setErrors(['No valid names found. Please check your input.']);
+        return;
+      }
+
+      const updatedPlayers = [...players];
+
+      namesList.slice(0, 10).forEach((fullName, index) => {
+        const parts = fullName.split('#');
+
+        if (parts.length > 1) {
+          const nameOnly = parts[0].trim();
+          const tagContent = parts.slice(1).join('#');
+
+          const trimmedName = nameOnly.substring(0, 16);
+          const trimmedTag = '#' + tagContent.substring(0, 5);
+
+          updatedPlayers[index] = {
+            ...updatedPlayers[index],
+            name: trimmedName,
+            tag: trimmedTag,
+          };
+        } else {
+          updatedPlayers[index] = {
+            ...updatedPlayers[index],
+            name: fullName.substring(0, 16),
+            tag: updatedPlayers[index]?.tag || '',
+          };
+        }
+      });
+
+      setPlayers(updatedPlayers);
+
+      const message = `Successfully added ${Math.min(namesList.length, 10)} player name${namesList.length !== 1 ? 's' : ''}`;
+      setSuccessMessage(message);
+
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error) {
+      console.error('Error processing names list:', error);
+      setErrors(['Failed to process names. Please check your input format.']);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setErrors(['Please upload an image file.']);
+      return;
+    }
+
+    setErrors([]);
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      setUploadedImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    processImageOCR(file);
+  };
+
+  const renderInputMethods = () => (
+    <div className="mb-6">
+      <div className="flex mb-4 border-b border-dark-300">
+        <button
+          type="button"
+          onClick={() => setActiveTab('manual')}
+          className={`py-2 px-4 font-medium text-sm mr-2 ${
+            activeTab === 'manual'
+              ? 'text-[#d4af37] border-b-2 border-[#d4af37]'
+              : 'text-gray-400 hover:text-gray-300'
+          }`}
+        >
+          Manual Entry
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('bulk')}
+          className={`py-2 px-4 font-medium text-sm ${
+            activeTab === 'bulk'
+              ? 'text-[#d4af37] border-b-2 border-[#d4af37]'
+              : 'text-gray-400 hover:text-gray-300'
+          }`}
+        >
+          Bulk Add Players
+        </button>
+      </div>
+
+      {activeTab === 'bulk' && (
+        <div className="bg-dark-200/50 p-4 rounded-md">
+          <div className="mb-4">
+            <div className="text-sm text-gray-400 mb-2">
+              Paste a list of player names (one per line or comma-separated)
+            </div>
+            <textarea
+              value={bulkNames}
+              onChange={e => setBulkNames(e.target.value)}
+              className="w-full bg-dark-300 border border-dark-400 focus:border-[#d4af37] text-white rounded text-sm p-2.5 h-32"
+              placeholder="Example:
+AsahiKen, Batman, JuanTheGamer183, Quixxy#NA1, WreckBoy"
+            />
+            <div className="flex justify-end mt-2">
+              <button
+                type="button"
+                onClick={processBulkNames}
+                className="bg-[#d4af37] hover:bg-[#41a6ba] text-black text-sm font-medium rounded px-4 py-1.5 transition-colors"
+              >
+                Add Players
+              </button>
+            </div>
+          </div>
+
+          <div className="border-t border-dark-400 pt-4 mb-2">
+            <div className="text-sm text-gray-400 mb-2">
+              Or upload a screenshot with player names (preferabbly from discord) (early
+              experimental)
+            </div>
+            <div className="flex items-center">
+              <input
+                type="file"
+                id="image-upload"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                disabled={isOcrProcessing}
+              />
+              <label
+                htmlFor="image-upload"
+                className={`cursor-pointer bg-dark-300 hover:bg-dark-400 text-white font-medium py-2 px-4 rounded flex items-center transition ${isOcrProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isOcrProcessing ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Upload Screenshot
+                  </>
+                )}
+              </label>
+            </div>
+
+            {uploadedImage && (
+              <div className="mt-3 relative">
+                <div className="relative w-full max-w-md">
+                  <img
+                    src={uploadedImage}
+                    alt="Uploaded player list"
+                    className="rounded border border-dark-400 max-h-64 object-contain bg-dark-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setUploadedImage(null)}
+                    className="absolute top-2 right-2 bg-dark-900/80 text-white rounded-full p-1 hover:bg-dark-900"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="mt-3 p-2 bg-green-900/30 border border-green-700/50 text-green-300 rounded text-sm">
+          <div className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-2"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {successMessage}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="bg-dark-100 rounded-lg p-6 shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center border-b border-dark-300 pb-3">
         Custom 5v5 Team Generator
       </h2>
+      {renderInputMethods()}
 
       <div className="mb-6 bg-dark-200/50 p-4 rounded-md shadow-inner">
         <div className="flex items-center">

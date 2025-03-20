@@ -1,4 +1,7 @@
+/* eslint-disable */
+
 export interface Player {
+  points?: number;
   pointValue?: number;
   id?: string;
   name: string;
@@ -95,3 +98,8 @@ export interface UseLocalStorageOptions<T> {
 }
 
 export type TierPoints = Record<string, number>;
+
+export interface CustomsFormProps {
+  onTeamsGenerated: (match: CustomMatch, entries: Record<string, any>) => void;
+  previousData?: Record<string, any>;
+}

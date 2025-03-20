@@ -89,13 +89,16 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
 
   const createFairTeams = (players: Player[]): [Player[], Player[]] => {
     const tierPoints = getTierPoints();
+
     const playersWithPoints = players.map(player => ({
       ...player,
       pointValue: calculatePlayerValue(player, tierPoints),
+      id: player.id || `${player.name}-${Math.random().toString(36).substr(2, 9)}`,
     }));
 
     if (localMatch.blueTeam.players.length > 0) {
       const factorRange = randomFactor / 100;
+
       playersWithPoints.forEach(player => {
         const randomVariation = 1 - factorRange + Math.random() * factorRange * 2;
         player.pointValue = player.pointValue * randomVariation;
@@ -155,6 +158,19 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
       if (!improved) break;
     }
 
+    const allPlayerIds = [...team1, ...team2].map(player => player.id);
+    const uniquePlayerIds = new Set(allPlayerIds);
+
+    if (allPlayerIds.length !== uniquePlayerIds.size) {
+      console.error('Duplicate players detected in teams!');
+      return createFairTeams(
+        players.map(player => ({
+          ...player,
+          id: `${player.name}-${Math.random().toString(36).substr(2, 9)}`,
+        }))
+      );
+    }
+
     return [team1, team2];
   };
 
@@ -212,6 +228,10 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
     const bgColor = teamType === 'blue' ? 'bg-blue-900/10' : 'bg-red-900/10';
     const hoverColor = teamType === 'blue' ? 'hover:bg-blue-900/20' : 'hover:bg-red-900/20';
 
+    const getPlayerOpggUrl = (playerName: string) => {
+      return `https://www.op.gg/summoners/na/${encodeURIComponent(playerName.replace('#', '-'))}`;
+    };
+
     return (
       <div
         key={`${player.name}-${index}`}
@@ -221,7 +241,32 @@ const TeamDisplay: React.FC<TeamDisplayProps> = ({ match, onReset, previousEntri
           {index + 1}
         </div>
         <div className="flex-grow">
-          <div className="font-medium">{player.name}</div>
+          <div className="font-medium flex items-center">
+            {player.name}
+            <a
+              href={getPlayerOpggUrl(player.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-2 text-xs bg-dark-500 hover:bg-dark-400 text-gray-300 hover:text-white p-1 rounded inline-flex items-center transition-colors"
+              title={`View ${player.name} on OP.GG`}
+              onClick={e => e.stopPropagation()}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3 w-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </a>
+          </div>
           <div className="flex items-center space-x-2 text-sm">
             <span
               className={`${getRankColorClass(player.rank)} px-2 py-0.5 rounded ${getRankBgClass(player.rank)}`}
