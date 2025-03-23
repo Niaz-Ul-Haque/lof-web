@@ -1,13 +1,9 @@
 'use client';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ThreeJSBackground } from '@/components/ui/ThreeJSBackground';
 import TournamentDetails from '@/components/tournaments/TournamentDetails';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Button from '@/components/ui/Button';
 import { Tournament } from '@/lib/types';
 import { getTournamentById } from '@/lib/constants';

@@ -1,9 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// import { max } from 'three/examples/jsm/nodes/Nodes.js';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Player } from './types';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { calculatePlayerValue, calculateTeamAverage, shuffleArray } from './utils';
+import { calculatePlayerValue } from './utils';
 
 export const generateBalancedTeams = (players: Player[], tierPoints: Record<string, number>) => {
   const playersWithIds = players.map(player => ({
