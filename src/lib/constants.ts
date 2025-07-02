@@ -53,6 +53,7 @@ export const ROUTES = {
   TOURNAMENTS: '/tournaments',
   CUSTOMS: '/customs',
   FAQ: '/faq',
+  STATS: '/stats',
   ADMIN: '/admin',
   ADMIN_TOURNAMENTS: '/admin/tournaments',
   ADMIN_CUSTOMS: '/admin/customs',
@@ -72,6 +73,8 @@ export const NAV_ITEMS = [
   { name: 'Tournaments', href: ROUTES.TOURNAMENTS },
   { name: 'Customs', href: ROUTES.CUSTOMS },
   { name: 'FAQ/Rules', href: ROUTES.FAQ },
+  { name: 'Stats', href: ROUTES.STATS },
+
 ];
 
 export const ADMIN_NAV_ITEMS = [
