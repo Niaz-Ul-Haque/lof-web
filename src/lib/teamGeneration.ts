@@ -16,9 +16,7 @@ export const generateBalancedTeams = (players: Player[], tierPoints: Record<stri
     console.error('Need exactly 10 unique players for team generation');
     throw new Error('Need exactly 10 unique players for team generation');
   }
-
   const uniquePlayers = Array.from(playerMap.values());
-
   const sortedPlayers = [...uniquePlayers].sort((a, b) => {
     const aPoints = a.points || calculatePlayerValue(a, tierPoints);
     const bPoints = b.points || calculatePlayerValue(b, tierPoints);
