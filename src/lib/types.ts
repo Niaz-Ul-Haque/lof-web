@@ -103,3 +103,26 @@ export interface CustomsFormProps {
   onTeamsGenerated: (match: CustomMatch, entries: Record<string, any>) => void;
   previousData?: Record<string, any>;
 }
+
+export type PickOrderToken = 'A1' | 'B1' | 'A2' | 'B2';
+
+export interface DraftSettings {
+  firstPick: 'A' | 'B' | 'coin';
+  pickOrder: string;
+  turnSeconds: number; 
+  autoPick: 'bestFit' | 'highestMMR' | 'randomTop3' | 'off';
+  similarityWindow: number;
+}
+
+export interface DraftState {
+  allPlayers: Player[];
+  captainA: Player | null;
+  captainB: Player | null;
+  teamA: Player[];
+  teamB: Player[];
+  pool: Player[];
+  orderQueue: Array<'A' | 'B'>;
+  currentTurnIndex: number;
+  timer: { remaining: number; active: boolean; };
+  history: Array<{ playerId: string; to: 'A' | 'B'; from: 'pool' | 'A' | 'B'; }>;
+}
