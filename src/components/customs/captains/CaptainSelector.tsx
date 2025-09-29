@@ -80,8 +80,6 @@ const CaptainSelector: React.FC<CaptainSelectorProps> = ({
 
   const PICK_ORDER_PRESETS = [
     { label: 'Standard (1-2-2-2-1)', value: '1-2-2-2-1' },
-    { label: 'Variant (1-2-2-1-2)', value: '1-2-2-1-2' },
-    { label: 'Alternating (1-1-1-1-1-1-1-1)', value: '1-1-1-1-1-1-1-1' },
   ];
 
   return (
