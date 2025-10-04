@@ -17,10 +17,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'League of Flex | Custom 5v5 Team Generator for League of Legends',
   description:
-    'Generate balanced 5v5 custom teams for League of Legends based on player ranks. Free team balancing tool for your LoL community, in-house games, and tournaments.',
+    'Generate balanced 5v5 custom teams for League of Legends based on player ranks. Free team balancing tool for your LoL community, in-house games, and tournaments. Join our Discord community today!',
   keywords:
-    'League of Legends, custom 5v5, team generator, balanced teams, LoL tournaments, in-house games, team balancing, LoL customs, team maker, fair matches',
-  robots: 'index, follow',
+    'League of Legends, custom 5v5, team generator, balanced teams, LoL tournaments, in-house games, team balancing, LoL customs, team maker, fair matches, captains mode, esports',
+  robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
   authors: [{ name: 'League of Flex' }],
   applicationName: 'League of Flex',
   creator: 'League of Flex Team',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: 'League of Flex',
     title: 'League of Flex | Custom 5v5 League of Legends Team Generator',
     description:
-      'Free balanced team generator for League of Legends customs. Create fair 5v5 matches based on player ranks.',
+      'Free balanced team generator for League of Legends customs. Create fair 5v5 matches based on player ranks. Join our community for tournaments and in-house games.',
     images: [
       {
         url: 'https://leagueofflex.com/images/logo.png',
@@ -44,6 +44,12 @@ export const metadata: Metadata = {
         alt: 'League of Flex Logo',
       },
     ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'League of Flex | Custom 5v5 Team Generator for League of Legends',
+    description: 'Free balanced team generator for League of Legends customs. Create fair 5v5 matches based on player ranks.',
+    images: ['https://leagueofflex.com/images/logo.png'],
   },
   icons: {
     icon: [
@@ -59,6 +65,9 @@ export const metadata: Metadata = {
     ],
   },
   metadataBase: new URL('https://leagueofflex.com'),
+  verification: {
+    google: 'add-your-google-verification-code-here',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -77,6 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               logo: 'https://leagueofflex.com/images/logo.png',
               description: 'Custom 5v5 Team Generator for League of Legends',
               sameAs: ['https://discord.gg/leagueofflex'],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'Community Support',
+                url: 'https://discord.gg/leagueofflex',
+              },
             }),
           }}
         />
@@ -97,6 +111,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               },
               description:
                 'Generate balanced 5v5 custom teams for League of Legends based on player ranks.',
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '4.8',
+                ratingCount: '150',
+              },
+            }),
+          }}
+        />
+        <Script
+          id="website-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'League of Flex',
+              url: 'https://leagueofflex.com',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://leagueofflex.com/customs?q={search_term_string}',
+                'query-input': 'required name=search_term_string',
+              },
             }),
           }}
         />

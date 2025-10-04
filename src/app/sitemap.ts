@@ -5,13 +5,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: `${baseUrl}/customs`,
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: baseUrl,
+      url: `${baseUrl}/customs`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
@@ -20,13 +20,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/tournaments`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.7,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/faq`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.8,
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/stats`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.6,
     },
   ];
 }
